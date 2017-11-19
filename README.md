@@ -27,9 +27,9 @@ try {
 }
 ```
 
-Read from file:
+Read from string:
 ```
-import { fromFile } from 'yaml2php';
+import { fromString } from 'yaml2php';
 
 try {
   var php = fromString(`---
