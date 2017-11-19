@@ -1,0 +1,23 @@
+{
+  "name": "yaml2php",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rimraf dist && tsc"
+  },
+  "keywords": [
+    "yaml",
+    "php",
+    "config"
+  ],
+  "author": "Scott Smith",
+  "license": "ISC",
+  "dependencies": {
+    "yaml-ast-parser": "0.0.39"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.53",
+    "tsc": "^1.20150623.0"
+  }
+}
