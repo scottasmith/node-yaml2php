@@ -1,7 +1,7 @@
 import * as YAML from 'yaml-ast-parser';
 import { readFileSync, read } from 'fs';
 
-export class PhpStringVisitor {
+class PhpStringVisitor {
     private _pretty: boolean;
     private _indent: number;
     private _currentIndent = 0;
@@ -121,22 +121,22 @@ export class PhpStringVisitor {
     }
 }
 
-export function fromFile(filename: string) {
+export function fromFile(filename: string, pretty = false, indent = 4) {
     let doc = YAML.load(readFileSync(filename).toString());
 
     if (doc) {
-        let visitor = new PhpStringVisitor(true)
+        let visitor = new PhpStringVisitor(pretty, indent)
         return `<?php\nreturn ${visitor.accept(doc)};`;
     }
 
     return `<?php\nreturn array();`;
 }
 
-export function fromString(value: string) {
+export function fromString(value: string, pretty = false, indent = 4) {
     let doc = YAML.load(value);
 
     if (doc) {
-        let visitor = new PhpStringVisitor(true)
+        let visitor = new PhpStringVisitor(pretty, indent)
         return `<?php\nreturn ${visitor.accept(doc)};`;
     }
 

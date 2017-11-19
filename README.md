@@ -44,3 +44,11 @@ key1:
   console.log(e);
 }
 ```
+
+For both functions, there are two options as second and third parameters.
+These make the code more readable
+```
+function fromFile(filename: string, pretty?: boolean, indent?: number): string;
+function fromString(value: string, pretty?: boolean, indent?: number): string;
+```
+
