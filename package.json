@@ -1,14 +1,15 @@
 {
   "name": "yaml2php",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/read-yaml.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/scottasmith/yaml2php"
   },
   "scripts": {
-    "build": "rimraf dist && tsc"
+    "build": "rimraf dist && tsc",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "yaml",
@@ -22,6 +23,8 @@
   },
   "devDependencies": {
     "@types/node": "^8.0.53",
-    "tsc": "^1.20150623.0"
+    "rimraf": "^2.6.2",
+    "tsc": "^1.20150623.0",
+    "typescript": "^2.6.1"
   }
 }
