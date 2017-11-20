@@ -1,14 +1,19 @@
 import * as YAML from 'yaml-ast-parser';
-import { readFileSync, read } from 'fs';
+import { dirname, sep } from 'path';
+import { readFileSync } from 'fs';
+import { YAMLDocument, YAMLNode } from 'yaml-ast-parser';
 
 class PhpStringVisitor {
+    private _dir: string;
     private _pretty: boolean;
     private _indent: number;
     private _currentIndent = 0;
 
-    constructor(pretty = false, indent = 4) {
+    constructor(dir: string, pretty = false, indent = 4, startIndent = 0) {
+        this._dir = dir;
         this._pretty = pretty;
         this._indent = indent;
+        this._currentIndent = startIndent;
     }
 
     public accept(node: YAML.YAMLNode): string {
@@ -36,6 +41,9 @@ class PhpStringVisitor {
                 this._currentIndent--;
                 value += this._returnPretty(')');
                 break;
+            }
+            case YAML.Kind.INCLUDE_REF: {
+                return this.visitInclude(<YAMLNode>node);
             }
         }
 
@@ -112,6 +120,20 @@ class PhpStringVisitor {
         return maps.join(', ');
     }
 
+    private visitInclude(node: YAML.YAMLNode): string {
+        let filename = `${this._dir}${sep}${node.value}`;
+        let doc: YAMLDocument;
+
+        try {
+            doc = YAML.load(readFileSync(filename).toString());
+        } catch (e) {
+            throw new Error(`Failed to load YAML include file: ${filename} with error ${e.message}`);
+        }
+
+        let visitor = new PhpStringVisitor(this._dir, this._pretty, this._indent, this._currentIndent);
+        return visitor.accept(doc as YAMLNode);
+    }
+
     private _returnPretty(value: string, newLine = true): string {
         if (this._pretty) {
             return (true == newLine ? '\n' : '') + Array((this._currentIndent * this._indent) + 1).join(" ") + value;
@@ -122,11 +144,19 @@ class PhpStringVisitor {
 }
 
 export function fromFile(filename: string, pretty = false, indent = 4) {
-    let doc = YAML.load(readFileSync(filename).toString());
+    let doc: YAMLDocument;
+    let dir: string;
+
+    try {
+        dir = dirname(filename);
+        doc = YAML.load(readFileSync(filename).toString());
+    } catch (e) {
+        throw new Error(`Failed to load YAML file: ${filename} with error ${e.message}`);
+    }
 
     if (doc) {
-        let visitor = new PhpStringVisitor(pretty, indent)
-        return `<?php\nreturn ${visitor.accept(doc)};`;
+        let visitor = new PhpStringVisitor(dir, pretty, indent)
+        return `<?php\nreturn ${visitor.accept(doc as YAMLNode)};`;
     }
 
     return `<?php\nreturn array();`;
@@ -136,7 +166,7 @@ export function fromString(value: string, pretty = false, indent = 4) {
     let doc = YAML.load(value);
 
     if (doc) {
-        let visitor = new PhpStringVisitor(pretty, indent)
+        let visitor = new PhpStringVisitor(__dirname, pretty, indent)
         return `<?php\nreturn ${visitor.accept(doc)};`;
     }
 
