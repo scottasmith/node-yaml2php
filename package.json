@@ -1,8 +1,12 @@
 {
   "name": "yaml2php",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scottasmith/yaml2php"
+  },
   "scripts": {
     "build": "rimraf dist && tsc"
   },
